@@ -3,6 +3,7 @@ collection of machine learning code
 
 Code in this repository:
 * [k-means clustering algorithm for image compression](k-means-image-compression/k-means-image-compression.ipynb)
+* [recurrent neural network for name classification](rnn-name-classification/recurrent-neural-network-name-classification.ipynb)
 
 Other machine learning/optimization repositories of mine:
 * [deep reinforcement learning for learning a computer game](https://github.com/juliankappler/lunar-lander)
