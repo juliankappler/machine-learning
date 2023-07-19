@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 
+
+
+
 class k_means():
     
     def __init__(self,K=2):
@@ -353,6 +356,52 @@ class k_means_parallel(k_means):
         return minimal_centroids, minimal_costs, minimal_cluster_indices
     
 
+
+def plot_image(image,filename=None,title=None):
+        #
+        # get aspect ratio (used to ensure saved image has size similar to 
+        # input image)
+        x,y = np.shape(image)[:2]
+        aspect_ratio = x/y
+        figsize=5
+        # 
+        #
+        fig, ax = plt.subplots(1,1,figsize=(figsize*aspect_ratio,figsize))
+        fig.subplots_adjust(top = 1, bottom = 0, 
+                            right = 1, left = 0, 
+                            hspace = 0, wspace = 0)
+        ax.imshow(image)
+        ax.axis('off')
+        if title is not None:
+            ax.set_title(title,fontsize=aspect_ratio*15)
+        plt.show()
+        if filename is not None:
+            fig.savefig(filename,bbox_inches='tight',dpi=int(x//figsize))
+        plt.close(fig)
+
+def decompress_image(image_compressed,
+                         colors,
+                         plot=True,
+                         filename=None,
+                         title =None,
+                         **kwargs):
+        #
+        image = np.zeros((*np.shape(image_compressed),3),dtype=int)
+        #
+        #
+        for i,e in enumerate(colors):
+            mask = (image_compressed == i)
+            image[mask] = e
+        #
+        if plot:
+            plot_image(image=image,
+                            filename=filename,
+                            title=title)
+        #
+        return image
+    
+
+
 class image_compression():
     
     def __init__(self,K=2,
@@ -428,25 +477,9 @@ class image_compression():
     
     def plot_image(self,image,filename=None,title=None):
         #
-        # get aspect ratio (used to ensure saved image has size similar to 
-        # input image)
-        x,y = np.shape(image)[:2]
-        aspect_ratio = x/y
-        figsize=5
-        # 
-        #
-        fig, ax = plt.subplots(1,1,figsize=(figsize*aspect_ratio,figsize))
-        fig.subplots_adjust(top = 1, bottom = 0, 
-                            right = 1, left = 0, 
-                            hspace = 0, wspace = 0)
-        ax.imshow(image)
-        ax.axis('off')
-        if title is not None:
-            ax.set_title(title,fontsize=aspect_ratio*15)
-        plt.show()
-        if filename is not None:
-            fig.savefig(filename,bbox_inches='tight',dpi=int(x//figsize))
-        plt.close(fig)
+        return plot_image(image=image,
+                          filename=filename,
+                          title=title)
 
     def decompress_image(self,
                          image_compressed,
@@ -456,17 +489,10 @@ class image_compression():
                          title =None,
                          **kwargs):
         #
-        image = np.zeros((*np.shape(image_compressed),3),dtype=int)
-        #
-        #
-        for i,e in enumerate(colors):
-            mask = (image_compressed == i)
-            image[mask] = e
-        #
-        if plot:
-            self.plot_image(image=image,
-                            filename=filename,
-                            title=title)
-        #
-        return image
-    
+        return decompress_image(
+                         image_compressed,
+                         colors,
+                         plot,
+                         filename,
+                         title,
+                         **kwargs)
