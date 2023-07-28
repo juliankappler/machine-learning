@@ -84,19 +84,11 @@ class sudoku_solver:
         # baord
         if s == self.s_final:
             #
+            self.found_solution = True
             # add current solution to list of solutions
             self.solutions.append(copy.deepcopy(self.board))
             #
-            # either terminate the search for a solution, or revert all changes
-            # to the board to move on with the search for other solutions
-            if self.get_all_solutions:
-                # if we return False, then all changes to the board get
-                # reversed and we continue the iteration
-                return False
-            else:
-                # if we return True, then the algorithm is stopped with the
-                # board in its current state
-                return True
+            return
         #
         # convert the counting index s to a lattice position (i,j) = (row, column)
         i,j = divmod(s, self.n) 
@@ -104,7 +96,8 @@ class sudoku_solver:
         if self.board[i][j] != ".": 
             # there is a number at the current site 
             # move on to the next site
-            return self.backtrack(s=s+1)
+            self.backtrack(s=s+1)
+            #
         else:
             # if there is no number at the current site, try filling the site
             for v in range(1,10):
@@ -112,20 +105,18 @@ class sudoku_solver:
                 #
                 # check if filling the site (i,j) with value v is a valid move
                 if self.move_is_valid(i=i,j=j,v=v): 
-                    self.board[i][j] = v
-                    if self.backtrack(s=s+1):
-                        # if backtrack returns True, then it means we found a 
-                        # solution and want the algorithm to stop (c.f. line XX)
-                        return True
-                    else:
-                        # if backtrack returns False, we want the changes to the
-                        # board to be reverted (either because the current 
-                        # candidate for the solution was unsuccessful, or because
-                        # we found a solution and now want to move on to finding
-                        # another one)
-                        self.board[i][j] = "."
-                #
-            return False
+                    # if it is, make the change ..
+                    self.board[i][j] = v                    
+                    # .. and try filling the board further
+                    self.backtrack(s=s+1)
+                    #
+                    if self.found_solution == True:
+                        if not self.get_all_solutions:
+                            return
+                    # undo the change, so that we can try the next value
+                    # at (i,j)
+                    self.board[i][j] = "."
+        return
 
     def solve(self, board, get_all_solutions=True):
         '''
@@ -143,6 +134,7 @@ class sudoku_solver:
         self.s_final = self.n*self.n
         #        
         self.get_all_solutions = get_all_solutions
+        self.found_solution = False
         #
         self.backtrack(s=0)
         #
