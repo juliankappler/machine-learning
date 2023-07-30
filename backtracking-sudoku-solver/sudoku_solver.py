@@ -7,7 +7,8 @@ class sudoku_solver:
     This class implements a Sudoku solver using a backtracking algorithm.
 
     The solver is called using
-    sol = Solution()
+    from sudoku_solver import sudoku_solver
+    sol = sudoku_solver()
     sol.solve(board=board)
 
     where board is a list of lists of strings that contain the partially 
